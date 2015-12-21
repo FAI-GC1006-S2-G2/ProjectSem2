@@ -1,6 +1,9 @@
 package group2.Scene;
 
 import group2.Config;
+import group2.Geometric.Vector2D;
+import group2.Map.TileMap;
+import group2.Model.Player;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -25,9 +28,15 @@ public class GameScene extends Scene {
    int fps;
    long lastUpdateTime = 0;
 
+   // Variables
+   Player player;
+   TileMap map;
+
    public GameScene() {
       super(new Group());
       setupGameLoop();
+      map = new TileMap(this, 1);
+      newGame();
    }
 
    private void setupGameLoop() {
@@ -42,10 +51,10 @@ public class GameScene extends Scene {
                public void handle(KeyEvent e)
                {
                   String code = e.getCode().toString();
-
                   // only add once... prevent duplicates
-                  if ( !input.contains(code) )
-                     input.add( code );
+                  if ( !input.contains(code) ) {
+                     input.add(code);
+                  }
                }
             });
 
@@ -71,21 +80,25 @@ public class GameScene extends Scene {
       mainLoopManager.start();
    }
 
+   private void newGame() {
+      player = new Player("sprites/Player00.png");
+      player.setPosition(new Vector2D(100, 100));
+   }
+
    public void handleEvents(List<String> input) {
-//      if (input.contains("LEFT"))
-////         this.player.shouldMoveLeft = true;
-//      else if (input.contains("RIGHT"))
-//         this.player.shouldMoveRight = true;
-//      else {
-//         this.player.shouldMoveLeft = false;
-//         this.player.shouldMoveRight = false;
-//      }
-//
-//      if (input.contains("SPACE"))
-//         this.player.shouldJump = true;
-//      else {
-//         this.player.shouldJump = false;
-//      }
+      if (input.contains("LEFT")) {
+         this.player.moveLeft();
+      }
+      else if (input.contains("RIGHT"))
+         this.player.moveRight();
+      else if (input.contains("UP")) {
+         this.player.moveUp();
+      } else if (input.contains("DOWN")) {
+         this.player.moveDown();
+      }
+      else {
+         this.player.stopMove();
+      }
    }
 
    public void update(long currentTime) {
@@ -94,9 +107,8 @@ public class GameScene extends Scene {
       if (dt > 0.03) dt = 0.03;
       lastUpdateTime = currentTime;
 
-
       // logic code come here
-
+      player.update(dt);
 
       // for debug purpose
       if (debugInterval >= 30) {
@@ -111,6 +123,8 @@ public class GameScene extends Scene {
       gc.clearRect(0, 0, Config.WindowProperties.WINDOW_WIDTH, Config.WindowProperties.WINDOW_HEIGHT);
 
       // our code will come here
+      map.render(gc);
+      player.render(gc);
 
       // for debug purpose
       gc.setStroke(Color.AQUA);

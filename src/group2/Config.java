@@ -14,5 +14,14 @@ public class Config {
       public final static int WINDOW_HEIGHT = 576;
    }
 
+   public static class PlayerProperties {
+      public final static double JumpForce = 400;
+      public final static double JumpCutOff = 200;
+      public final static double MaxMoveSpeed = 500;
+      public final static double WalkingAccelerate = 1500;
+
+      public final static int Width = 32;
+      public final static int Height = 32;
+   }
 
 }
