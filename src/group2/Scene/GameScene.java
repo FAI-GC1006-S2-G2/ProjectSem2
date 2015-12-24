@@ -35,7 +35,7 @@ public class GameScene extends Scene {
    public GameScene() {
       super(new Group());
       setupGameLoop();
-      map = new TileMap(this, 1);
+      map = new TileMap(this, 10);
       newGame();
    }
 

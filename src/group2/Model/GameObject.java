@@ -14,17 +14,8 @@ public abstract class GameObject extends Sprite {
 
    public GameObject(String imageNamed) {
       super(imageNamed);
-
    }
 
-   public GameObject() {
-      // TODO Auto-generated constructor stub
-   }
-
-   @Override
-   public void update(double dt) {
-
-   }
-
+   public GameObject(){}
 }
 

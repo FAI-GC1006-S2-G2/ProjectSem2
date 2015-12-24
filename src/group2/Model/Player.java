@@ -14,7 +14,6 @@ public class Player extends Character {
 
    @Override
    public void setTexture(Image newImage) {
-      // TODO Auto-generated method stub
       super.setTexture(newImage);
    }
 
@@ -29,7 +28,6 @@ public class Player extends Character {
 
    @Override
    public void loadAnimations() {
-      // frameDictionary.put(CharacterState.STANDING, this.loadAnimations("standingAnim", false));
       frameDictionary.put(CharacterState.MOVE_UP, this.loadAnimations("moveUpAnim", true));
       frameDictionary.put(CharacterState.MOVE_RIGHT, this.loadAnimations("moveRightAnim", true));
       frameDictionary.put(CharacterState.MOVE_DOWN, this.loadAnimations("moveDownAnim", true));

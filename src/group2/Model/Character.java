@@ -15,118 +15,118 @@ import java.util.Map;
 
 public abstract class Character extends GameObject {
 
-   protected Map<CharacterState, AnimatedImage> frameDictionary;
-   protected double timeElapsedSinceStartAnimation; // second
-   protected AnimatedImage animation;
-   protected int characterDirection;
-   protected CharacterState characterState;
-   protected boolean isMoving = false;
-   protected boolean onGround = false;
-   protected boolean onWall = false;
+    protected Map<CharacterState, AnimatedImage> frameDictionary;
+    protected double timeElapsedSinceStartAnimation; // second
+    protected AnimatedImage animation;
+    protected int characterDirection;
+    protected CharacterState characterState;
+    protected boolean isMoving = false;
+    protected boolean onGround = false;
+    protected boolean onWall = false;
 
-   public boolean isActive = false;
-   public Vector2D desiredPosition;
-   public Vector2D velocity = Vector2D.zero;
-   public int life;
-   public CharacterState getState() {
-      return this.characterState;
-   }
-   public void setOnGround(boolean onGround) {
-      this.onGround = onGround;
-      if (this.onGround)
-         this.velocity = new Vector2D(this.velocity.x, 0);
-   }
+    public boolean isActive = false;
+    public Vector2D desiredPosition;
+    public Vector2D velocity = Vector2D.zero;
+    public int life;
 
-   public void setOnWall(boolean onWall) {
-      this.onWall = onWall;
-      if (this.onWall)
-         this.velocity = new Vector2D(0, this.velocity.y);
-   }
+    public CharacterState getState() {
+        return this.characterState;
+    }
 
-   public boolean getOnWall() { return this.onWall; }
-   public void tookHit(Character character) {
+    public void setOnGround(boolean onGround) {
+        this.onGround = onGround;
+        if (this.onGround)
+            this.velocity = new Vector2D(this.velocity.x, 0);
+    }
 
-   }
+    public void setOnWall(boolean onWall) {
+        this.onWall = onWall;
+        if (this.onWall)
+            this.velocity = new Vector2D(0, this.velocity.y);
+    }
 
-   public Rect collisionBoundingBox() {
-      return new Rect(desiredPosition.x - this.size.width / 2, desiredPosition.y - this.size.height / 2, this.size.width, this.size.height);
-   }
+    public boolean getOnWall() {
+        return this.onWall;
+    }
 
-   public void loadAnimations() {}
+    public void tookHit(Character character) {
 
-   public void changeState(CharacterState newState) {
-      if (newState == this.characterState) return;
-      this.characterState = newState;
-      this.timeElapsedSinceStartAnimation = 0;
-      animation = frameDictionary.get(this.characterState);
-   }
+    }
 
-   public Character(String imageNamed) {
-      super(imageNamed);
-      this.characterState = CharacterState.STANDING;
-      frameDictionary = new HashMap<CharacterState, AnimatedImage>();
-      this.timeElapsedSinceStartAnimation = 0;
-      this.loadAnimations();
-   }
+    public Rect collisionBoundingBox() {
+        return new Rect(desiredPosition.x - this.size.width / 2, desiredPosition.y - this.size.height / 2, this.size.width, this.size.height);
+    }
 
-   protected void updateState(double dt) {
+    public abstract void loadAnimations();
 
-   }
+    public void changeState(CharacterState newState) {
+        if (newState == this.characterState) return;
+        this.characterState = newState;
+        this.timeElapsedSinceStartAnimation = 0;
+        animation = frameDictionary.get(this.characterState);
+    }
 
-   @Override
-   public void update(double dt) {
-      // setup current frame for animation purpose
-      updateAnimation(dt);
-   }
+    public Character(String imageNamed) {
+        super(imageNamed);
+        this.characterState = CharacterState.STANDING;
+        frameDictionary = new HashMap<CharacterState, AnimatedImage>();
+        this.timeElapsedSinceStartAnimation = 0;
+        this.loadAnimations();
+    }
 
-   protected void updateAnimation(double dt) {
-      // this.flipX = this.velocity.x < 0;
-      this.timeElapsedSinceStartAnimation += dt;
-      double elapsedTime = (double)(this.timeElapsedSinceStartAnimation);
-      animation = frameDictionary.get(this.characterState);
-      animation.reapeat = isMoving;
+    protected void updateState(double dt) {
 
-      this.setTexture(animation.getFrame(elapsedTime));
-   }
+    }
 
-   protected AnimatedImage loadAnimations(String className, String animationName, boolean repeat) {
-      try {
-         Map<String, Object> root = Plist.load("data/" + className + ".plist");
-         Map<String, Object> properties = (Map<String, Object>)root.get(animationName);
-         String[] imageNames = properties.get("animationFrames").toString().split(",");
-         double duration = Double.valueOf(properties.get("delay").toString());
+    @Override
+    public void update(double dt) {
+        // setup current frame for animation purpose
+        updateAnimation(dt);
+    }
 
-         Image[] images = new Image[imageNames.length];
-         for (int i = 0; i < images.length; i++) {
-            images[i] = new Image(new FileInputStream("sprites/" + className + imageNames[i] + ".png"));
-         }
-         AnimatedImage result = new AnimatedImage(images, duration, repeat);
-         return result;
+    protected void updateAnimation(double dt) {
+        // this.flipX = this.velocity.x < 0;
+        this.timeElapsedSinceStartAnimation += dt;
+        double elapsedTime = (double) (this.timeElapsedSinceStartAnimation);
+        animation = frameDictionary.get(this.characterState);
+        animation.repeat = isMoving;
 
-      } catch (Exception exception) {
-         exception.printStackTrace();
-      }
-      return null;
-   }
+        this.setTexture(animation.getFrame(elapsedTime));
+    }
 
-   protected AnimatedImage loadAnimations(String animationName, boolean repeat) {
-      return loadAnimations(this.getClassName(), animationName, repeat);
-   }
+    protected AnimatedImage loadAnimations(String className, String animationName, boolean repeat) {
+        try {
+            Map<String, Object> root = Plist.load("data/" + className + ".plist");
+            Map<String, Object> properties = (Map<String, Object>) root.get(animationName);
+            String[] imageNames = properties.get("animationFrames").toString().split(",");
+            double duration = Double.valueOf(properties.get("delay").toString());
 
-   public Character() {
-      // TODO Auto-generated constructor stub
-   }
+            Image[] images = new Image[imageNames.length];
+            for (int i = 0; i < images.length; i++) {
+                images[i] = new Image(new FileInputStream("sprites/" + className + imageNames[i] + ".png"));
+            }
+            AnimatedImage result = new AnimatedImage(images, duration, repeat);
+            return result;
 
-   public enum CharacterState {
-      STANDING, MOVE_UP, MOVE_RIGHT, MOVE_DOWN, MOVE_LEFT
-   }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return null;
+    }
 
-   public class CharacterDirection {
-      public static final int NONE = 0;
-      public static final int UP = 1;
-      public static final int RIGHT = 2;
-      public static final int DOWN = 3;
-      public static final int LEFT = 4;
+    protected AnimatedImage loadAnimations(String animationName, boolean repeat) {
+        return loadAnimations(this.getClassName(), animationName, repeat);
+    }
 
-   }
+    public enum CharacterState {
+        STANDING, MOVE_UP, MOVE_RIGHT, MOVE_DOWN, MOVE_LEFT
+    }
+
+    public class CharacterDirection {
+        public static final int NONE = 0;
+        public static final int UP = 1;
+        public static final int RIGHT = 2;
+        public static final int DOWN = 3;
+        public static final int LEFT = 4;
+    }
 }

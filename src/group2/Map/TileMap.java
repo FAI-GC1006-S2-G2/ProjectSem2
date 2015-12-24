@@ -9,80 +9,107 @@ import xmlwise.XmlParseException;
 import xmlwise.Xmlwise;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
 
 /**
- * Created by BTC on 2015/12/18.
+ * Author: Gác Xanh (phamanh)
+ * Date: 23/12/2015
+ * Class: OOP2
+ * Project: ProjectGame
  */
 public class TileMap extends GameObject {
+    private static int mapWidth;
+    private static int mapHeight;
+    private static int tileWidth;
+    private static int tileHeight;
+    private static Image tileSet;
+    private static int numberTilePerRow;
+    private static int tileSpacing = 0;
+    private static int tileMargin = 0;
 
-    public int mapWidth;
-    public int mapHeight;
-    public int tileWidth;
-    public int tileHeight;
-    public Image tileSet;
-    public int[] data;
+    public static int getMapWidth() {
+        return mapWidth;
+    }
+
+    public static int getMapHeight() {
+        return mapHeight;
+    }
+
+    public LinkedList<Layer> layersList = new LinkedList<>();
 
     private void loadMapFromXML(String fileName) {
+        XmlElement root = null;
         try {
-            XmlElement root = Xmlwise.loadXml("levels/" + fileName);
-            XmlElement tilesetNode = root.getFirst();
-            XmlElement imageSourceNode = tilesetNode.getFirst();
-            String imageURL = imageSourceNode.getAttribute("source");
+            root = Xmlwise.loadXml("levels/" + fileName);
+            setPropertyFromXML(root);
+        } catch (XmlParseException | IOException e) {
+            e.printStackTrace();
+        }
+        // data
+        LinkedList<XmlElement> layerNode = root.get("layer");
+        for (XmlElement layer : layerNode) {
+            Layer layer1 = new Layer(layer);
+            layersList.add(layer1);
+        }
+    }
 
-            this.tileWidth = Integer.valueOf(root.getAttribute("tilewidth"));
-            this.tileHeight = Integer.valueOf(root.getAttribute("tileheight"));
-            this.mapWidth = Integer.valueOf(root.getAttribute("width"));
-            this.mapHeight = Integer.valueOf(root.getAttribute("height"));
+    private void setPropertyFromXML(XmlElement root) {
+        XmlElement tilesetNode = root.getFirst();
+        XmlElement imageSourceNode = tilesetNode.getFirst();
+        String imageURL = imageSourceNode.getAttribute("source");
+
+        this.tileWidth = Integer.valueOf(root.getAttribute("tilewidth"));
+        this.tileHeight = Integer.valueOf(root.getAttribute("tileheight"));
+        this.mapWidth = Integer.valueOf(root.getAttribute("width"));
+        this.mapHeight = Integer.valueOf(root.getAttribute("height"));
+        if (tilesetNode.containsAttribute("margin")) {
+            this.tileMargin = Integer.valueOf(tilesetNode.getAttribute("margin"));
+        }
+        if (tilesetNode.containsAttribute("spacing")) {
+            this.tileSpacing = Integer.valueOf(tilesetNode.getAttribute("spacing"));
+        }
+        this.numberTilePerRow = (Integer.valueOf(imageSourceNode.getAttribute("width")) + tileSpacing - tileMargin) / tileWidth;
+        try {
             this.tileSet = new Image(new FileInputStream("levels/" + imageURL));
 
-            // data
-            LinkedList<XmlElement> layerNode = root.get("layer");
-            XmlElement dataNode = layerNode.getFirst().get("data").getFirst();
-            String[] dataValue = dataNode.getValue().trim().split(",");
-            this.data = new int[mapWidth * mapHeight];
-            for (int i = 0; i < data.length; i++) {
-                String result = dataValue[i].trim();
-                try {
-                    this.data[i] = Integer.parseInt(result);
-                } catch (NumberFormatException e) {
-                    this.data[i] = 0;
-                }
-            }
-        } catch (XmlParseException | IOException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
     public TileMap(GameScene scene, int level) {
-//      this.scene = scene;
-//      this.currentLevel = level;
         loadMapFromXML("level" + level + ".tmx");
-
     }
 
     public void render(GraphicsContext gc) {
+        if (layersList.size() <= 0 || mapHeight * mapWidth <= 0) return;
         int size = mapWidth * mapHeight;
-        for (int i = 0; i < size; i++) {
-            int gid = data[i];
-            if (gid == 0) continue;
-            gid--;
-            int row = i / mapWidth;
-            int col = i % mapHeight;
-            double dy = this.position.y + row * tileWidth;
-            double dx = this.position.x + col * tileHeight;
+        for (int i = 0; i < layersList.size(); i++) {
 
-            int tileRow = gid / 8;
-            int tileCol = gid % 8;
-            int sx = 1 + tileCol * 33;
-            int sy = 1 + tileRow * 33;
+            int[] data = layersList.get(i).getData();
 
-            gc.drawImage(tileSet, sx, sy, 32, 32, dx, dy, tileWidth, tileHeight);
+            for (int j = 0; j < size; j++) {
+                int gid = data[j];
+                if (gid == 0) continue;
+                gid--;
 
+                int row = j / mapWidth;
+                int col = j % mapWidth;
+
+                double dy = this.position.y + row * tileWidth;
+                double dx = this.position.x + col * tileHeight;
+
+                int tileRow = gid / numberTilePerRow;
+                int tileCol = gid % numberTilePerRow;
+
+                int sx = tileMargin + tileCol * (tileWidth + tileSpacing);
+                int sy = tileMargin + tileRow * (tileWidth + tileSpacing);
+
+                gc.drawImage(tileSet, sx, sy, tileWidth, tileHeight, dx, dy, tileWidth, tileHeight);
+
+            }
         }
-
-
     }
-
 }

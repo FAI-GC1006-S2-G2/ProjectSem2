@@ -62,7 +62,6 @@ public class Sprite {
          gc.drawImage(this.image,
                position.x - size.width / 2, position.y  - size.height / 2,
                size.width, size.height);
-
    }
 
    public Vector2D getPosition() {

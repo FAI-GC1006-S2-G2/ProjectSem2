@@ -9,23 +9,23 @@ import javafx.scene.image.Image;
 public class AnimatedImage {
    public Image[] frames;
    public double duration;
-   public boolean reapeat = false;
+   public boolean repeat = false;
 
-   public AnimatedImage(Image[] frames, double duration, boolean reapeat) {
+   public AnimatedImage(Image[] frames, double duration, boolean repeat) {
       this.frames = frames;
       this.duration = duration;
-      this.reapeat = reapeat;
+      this.repeat = repeat;
    }
 
    public AnimatedImage(Image[] frames, double duration) {
       this.frames = frames;
       this.duration = duration;
-      this.reapeat = true;
+      this.repeat = true;
    }
 
    public Image getFrame(double elapsedTime) {
       if (frames.length == 1) return frames[0];
-      if (elapsedTime > frames.length * duration && !reapeat)
+      if (elapsedTime > frames.length * duration && !repeat)
          return frames[frames.length - 1];
 
       double elapsed = (elapsedTime % (frames.length * duration));
