@@ -9,21 +9,20 @@ import javafx.stage.Stage;
  */
 public class GameViewController extends Application {
 
-   // Properties
-   GameScene gameScene;
-   public static void main(String[] args) {
+    // Properties
+    GameScene gameScene;
 
-      launch(args);
-      System.exit(0);
-   }
+    public static void main(String[] args) {
+        launch(args);
+        System.exit(0);
+    }
 
-   @Override
-   public void start(Stage primaryStage) throws Exception {
-      primaryStage.setTitle("ISIS");
-      gameScene = new GameScene();
-
-      primaryStage.setScene(gameScene);
-      primaryStage.show();
-   }
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("ISIS");
+        gameScene = new GameScene();
+        primaryStage.setScene(gameScene);
+        primaryStage.show();
+    }
 
 }

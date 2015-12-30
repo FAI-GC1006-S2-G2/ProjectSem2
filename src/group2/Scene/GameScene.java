@@ -85,7 +85,7 @@ public class GameScene extends Scene {
       player.setPosition(new Vector2D(100, 100));
    }
 
-   public void handleEvents(List<String> input) {
+   private void handleEvents(List<String> input) {
       if (input.contains("LEFT")) {
          this.player.moveLeft();
       }
@@ -101,7 +101,7 @@ public class GameScene extends Scene {
       }
    }
 
-   public void update(long currentTime) {
+   private void update(long currentTime) {
 
       double dt = (currentTime - lastUpdateTime) / Config.NANOSECONDPERSEC;
       if (dt > 0.03) dt = 0.03;
@@ -118,7 +118,7 @@ public class GameScene extends Scene {
       debugInterval++;
    }
 
-   public void render(GraphicsContext gc) {
+   private void render(GraphicsContext gc) {
       // clear canvas
       gc.clearRect(0, 0, Config.WindowProperties.WINDOW_WIDTH, Config.WindowProperties.WINDOW_HEIGHT);
 

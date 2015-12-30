@@ -24,6 +24,7 @@ public class TileMap extends GameObject {
     private static int mapHeight;
     private static int tileWidth;
     private static int tileHeight;
+    private static Image background;
     private static Image tileSet;
     private static int numberTilePerRow;
     private static int tileSpacing = 0;
@@ -58,7 +59,9 @@ public class TileMap extends GameObject {
     private void setPropertyFromXML(XmlElement root) {
         XmlElement tilesetNode = root.getFirst();
         XmlElement imageSourceNode = tilesetNode.getFirst();
+        XmlElement imageLayerNode = root.get(1);
         String imageURL = imageSourceNode.getAttribute("source");
+        String backgroundURL = imageLayerNode.getFirst().getAttribute("source");
 
         this.tileWidth = Integer.valueOf(root.getAttribute("tilewidth"));
         this.tileHeight = Integer.valueOf(root.getAttribute("tileheight"));
@@ -73,7 +76,7 @@ public class TileMap extends GameObject {
         this.numberTilePerRow = (Integer.valueOf(imageSourceNode.getAttribute("width")) + tileSpacing - tileMargin) / tileWidth;
         try {
             this.tileSet = new Image(new FileInputStream("levels/" + imageURL));
-
+            this.background = new Image(new FileInputStream("levels/" + backgroundURL));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -85,6 +88,7 @@ public class TileMap extends GameObject {
 
     public void render(GraphicsContext gc) {
         if (layersList.size() <= 0 || mapHeight * mapWidth <= 0) return;
+        gc.drawImage(this.background,0,0,this.background.getWidth(),this.background.getHeight());
         int size = mapWidth * mapHeight;
         for (int i = 0; i < layersList.size(); i++) {
 
