@@ -56,8 +56,8 @@ public class Sprite {
 
     public void render(GraphicsContext gc) {
         gc.drawImage(this.image,
-                position.x, position.y,
-                -size.width, size.height);
+                position.x - size.width / 2, position.y - size.height / 2,
+                size.width, size.height);
     }
 
     public Vector2D getPosition() {
