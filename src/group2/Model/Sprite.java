@@ -56,7 +56,7 @@ public class Sprite {
 
     public void render(GraphicsContext gc) {
         gc.drawImage(this.image,
-                position.x - size.width / 2, position.y - size.height / 2,
+                position.x, position.y,
                 size.width, size.height);
     }
 

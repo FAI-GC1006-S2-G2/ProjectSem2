@@ -82,7 +82,7 @@ public class GameScene extends Scene {
 
    private void newGame() {
       player = new Player("sprites/Player00.png");
-      player.setPosition(new Vector2D(100, 100));
+      player.setPosition(new Vector2D(128, 128));
    }
 
    private void handleEvents(List<String> input) {
