@@ -20,115 +20,119 @@ import java.util.List;
  * Created by BTC on 2015/12/17.
  */
 public class GameScene extends Scene {
-   public Group root;
-   public Canvas canvas;
-   AnimationTimer mainLoopManager;
+    public Group root;
+    public Canvas canvas;
+    AnimationTimer mainLoopManager;
 
-   int debugInterval = 0;
-   int fps;
-   long lastUpdateTime = 0;
+    int debugInterval = 0;
+    int fps;
+    long lastUpdateTime = 0;
 
-   // Variables
-   Player player;
-   TileMap map;
+    // Variables
+    Player player;
+    TileMap map;
 
-   public GameScene() {
-      super(new Group());
-      setupGameLoop();
-      map = new TileMap(this, 10);
-      newGame();
-   }
+    public GameScene() {
+        super(new Group());
+        newGame();
+        setupGameLoop();
+    }
 
-   private void setupGameLoop() {
-      this.root = (Group) super.getRoot();
-      this.canvas = new Canvas(group2.Config.WindowProperties.WINDOW_WIDTH, group2.Config.WindowProperties.WINDOW_HEIGHT);
-      root.getChildren().add(canvas);
+    private void setupGameLoop() {
+        this.root = (Group) super.getRoot();
+        this.canvas = new Canvas(group2.Config.WindowProperties.WINDOW_WIDTH, group2.Config.WindowProperties.WINDOW_HEIGHT);
+        root.getChildren().add(canvas);
 
-      ArrayList<String> input = new ArrayList<String>();
-      this.setOnKeyPressed(
-            new EventHandler<KeyEvent>()
-            {
-               public void handle(KeyEvent e)
-               {
-                  String code = e.getCode().toString();
-                  // only add once... prevent duplicates
-                  if ( !input.contains(code) ) {
-                     input.add(code);
-                  }
-               }
-            });
+        ArrayList<String> input = new ArrayList<String>();
+        this.setOnKeyPressed(
+                new EventHandler<KeyEvent>() {
+                    public void handle(KeyEvent e) {
+                        String code = e.getCode().toString();
+                        // only add once... prevent duplicates
+                        if (!input.contains(code)) {
+                            input.add(code);
+                        }
+                    }
+                });
 
-      this.setOnKeyReleased(
-            new EventHandler<KeyEvent>()
-            {
-               public void handle(KeyEvent e)
-               {
-                  String code = e.getCode().toString();
-                  input.remove( code );
-               }
-            });
+        this.setOnKeyReleased(
+                new EventHandler<KeyEvent>() {
+                    public void handle(KeyEvent e) {
+                        String code = e.getCode().toString();
+                        input.remove(code);
+                    }
+                });
 
-      mainLoopManager = new AnimationTimer() {
+        mainLoopManager = new AnimationTimer() {
 
-         @Override
-         public void handle(long currentTime) {
-            handleEvents(input);
-            update(currentTime);
-            render(canvas.getGraphicsContext2D());
-         }
-      };
-      mainLoopManager.start();
-   }
+            @Override
+            public void handle(long currentTime) {
+                handleEvents(input);
+                update(currentTime);
+                render(canvas.getGraphicsContext2D());
+            }
+        };
+        mainLoopManager.start();
+    }
 
-   private void newGame() {
-      player = new Player("sprites/Player00.png");
-      player.setPosition(new Vector2D(128, 128));
-   }
+    private void newGame() {
+        map = new TileMap(this, 10);
+        player = new Player("sprites/Player00.png");
+        player.setPosition(new Vector2D(200, 200));
+    }
 
-   private void handleEvents(List<String> input) {
-      if (input.contains("LEFT")) {
-         this.player.moveLeft();
-      }
-      else if (input.contains("RIGHT"))
-         this.player.moveRight();
-      else if (input.contains("UP")) {
-         this.player.moveUp();
-      } else if (input.contains("DOWN")) {
-         this.player.moveDown();
-      }
-      else {
-         this.player.stopMove();
-      }
-   }
+    private void handleEvents(List<String> input) {
+        if (input.contains("LEFT")) {
+            this.player.moveLeft();
+        } else if (input.contains("RIGHT"))
+            this.player.moveRight();
+        else if (input.contains("UP")) {
+            this.player.moveUp();
+        } else if (input.contains("DOWN")) {
+            this.player.moveDown();
+        } else {
+            this.player.stopMove();
+        }
+    }
 
-   private void update(long currentTime) {
+    private void update(long currentTime) {
 
-      double dt = (currentTime - lastUpdateTime) / Config.NANOSECONDPERSEC;
-      if (dt > 0.03) dt = 0.03;
-      lastUpdateTime = currentTime;
+        double dt = (currentTime - lastUpdateTime) / Config.NANOSECONDPERSEC;
+        if (dt > 0.03) dt = 0.03;
+        lastUpdateTime = currentTime;
 
-      // logic code come here
-      player.update(dt);
+        // logic code come here
+        player.update(dt);
 
-      // for debug purpose
-      if (debugInterval >= 30) {
-         debugInterval = 0;
-         this.fps = (int)(1 / dt);
-      }
-      debugInterval++;
-   }
+        moveMapCenterPlayer(dt);
+        // for debug purpose
+        if (debugInterval >= 30) {
+            debugInterval = 0;
+            this.fps = (int) (1 / dt);
+        }
+        debugInterval++;
+    }
 
-   private void render(GraphicsContext gc) {
-      // clear canvas
-      gc.clearRect(0, 0, Config.WindowProperties.WINDOW_WIDTH, Config.WindowProperties.WINDOW_HEIGHT);
+    private void moveMapCenterPlayer(double dt) {
+        if (player.getPosition().x > 240){
+            map.setPosition(new Vector2D(player.getPosition().x - 240, 0));
+        }
+    }
 
-      // our code will come here
-      map.render(gc);
-      player.render(gc);
+    private void render(GraphicsContext gc) {
+        // clear canvas
+        gc.clearRect(0, 0, Config.WindowProperties.WINDOW_WIDTH, Config.WindowProperties.WINDOW_HEIGHT);
 
-      // for debug purpose
-      gc.setStroke(Color.AQUA);
-      gc.strokeText("FPS: " + String.valueOf(this.fps), this.getWidth() - 80, this.getHeight() - 30);
-   }
+        // our code will come here
+        map.render(gc);
+        player.render(gc);
+
+        // for debug purpose
+        gc.setStroke(Color.RED);
+        gc.strokeText("FPS: " + String.valueOf(this.fps), this.getWidth() - 80, this.getHeight() - 30);
+        gc.strokeText(String.valueOf(this.player.getPosition().x), 80, this.getHeight() - 30);
+        gc.strokeText(String.valueOf(this.player.getPosition().y), 80, this.getHeight() - 15);
+        gc.strokeText(String.valueOf(this.player.velocity.x) + " " + this.player.velocity.y, 80, this.getHeight() - 45);
+    }
 
 }

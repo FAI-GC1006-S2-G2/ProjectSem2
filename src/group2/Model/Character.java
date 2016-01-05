@@ -68,7 +68,6 @@ public abstract class Character extends GameObject {
 
     public Character(String imageNamed) {
         super(imageNamed);
-        this.characterState = CharacterState.STANDING;
         frameDictionary = new HashMap<CharacterState, AnimatedImage>();
         this.timeElapsedSinceStartAnimation = 0;
         this.loadAnimations();
@@ -87,7 +86,7 @@ public abstract class Character extends GameObject {
     protected void updateAnimation(double dt) {
         // this.flipX = this.velocity.x < 0;
         this.timeElapsedSinceStartAnimation += dt;
-        double elapsedTime = (double) (this.timeElapsedSinceStartAnimation);
+        double elapsedTime = this.timeElapsedSinceStartAnimation;
         animation = frameDictionary.get(this.characterState);
         animation.repeat = isMoving;
 

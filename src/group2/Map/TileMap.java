@@ -1,6 +1,9 @@
 package group2.Map;
 
+import group2.Config;
+import group2.Geometric.Vector2D;
 import group2.Model.GameObject;
+import group2.Model.Player;
 import group2.Scene.GameScene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -88,7 +91,7 @@ public class TileMap extends GameObject {
 
     public void render(GraphicsContext gc) {
         if (layersList.size() <= 0 || mapHeight * mapWidth <= 0) return;
-        gc.drawImage(this.background,0,0,this.background.getWidth(),this.background.getHeight());
+        gc.drawImage(this.background, -this.position.x, -this.position.y, this.background.getWidth(), this.background.getHeight());
         int size = mapWidth * mapHeight;
         for (int i = 0; i < layersList.size(); i++) {
 
@@ -102,8 +105,8 @@ public class TileMap extends GameObject {
                 int row = j / mapWidth;
                 int col = j % mapWidth;
 
-                double dy = this.position.y + row * tileWidth;
-                double dx = this.position.x + col * tileHeight;
+                double dy = - this.position.y + row * tileWidth;
+                double dx = - this.position.x + col * tileHeight;
 
                 int tileRow = gid / numberTilePerRow;
                 int tileCol = gid % numberTilePerRow;
@@ -115,5 +118,9 @@ public class TileMap extends GameObject {
 
             }
         }
+    }
+
+    public void update(Player player) {
+
     }
 }

@@ -4,8 +4,6 @@ import group2.Config;
 import group2.Geometric.Rect;
 import group2.Geometric.Vector2D;
 import group2.Geometric.Vector2DHelper;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 
 /**
  * Created by BTC on 2015/12/17.
@@ -19,10 +17,10 @@ public class Player extends Character {
 
     @Override
     public Rect collisionBoundingBox() {
-        Rect bounding = new Rect(this.desiredPosition.x - Config.PlayerProperties.Width / 2,
-                this.desiredPosition.y - Config.PlayerProperties.Height / 2,
-                Config.PlayerProperties.Width,
-                Config.PlayerProperties.Height);
+        Rect bounding = new Rect(this.desiredPosition.x - Config.PlayerProperties.WIDTH / 2,
+                this.desiredPosition.y - Config.PlayerProperties.HEIGHT / 2,
+                Config.PlayerProperties.WIDTH,
+                Config.PlayerProperties.HEIGHT);
         return new Rect(bounding.x, bounding.y, bounding.width, bounding.height);
     }
 
@@ -32,6 +30,7 @@ public class Player extends Character {
         frameDictionary.put(CharacterState.MOVE_RIGHT, this.loadAnimations("moveRightAnim", true));
         frameDictionary.put(CharacterState.MOVE_DOWN, this.loadAnimations("moveDownAnim", true));
         frameDictionary.put(CharacterState.MOVE_LEFT, this.loadAnimations("moveLeftAnim", true));
+        frameDictionary.put(CharacterState.STANDING, this.loadAnimations("standingAnim",true));
     }
 
     @Override
@@ -45,31 +44,52 @@ public class Player extends Character {
         CharacterState newState = this.characterState;
 
         Vector2D joyForce = Vector2D.zero;
+        Vector2D joyForceStep;
 
-        isMoving = true;
+        this.isMoving = true;
         switch (characterDirection) {
             case CharacterDirection.UP:
+                this.velocity.x = 0;
                 joyForce = new Vector2D(0, -Config.PlayerProperties.WalkingAccelerate);
+                joyForceStep = Vector2DHelper.MutilByScalar(joyForce, dt);
+                this.velocity = Vector2DHelper.AddVector(this.velocity, joyForceStep);
+                if (this.velocity.y < -Config.PlayerProperties.MaxMoveSpeed)
+                    this.velocity.y = -Config.PlayerProperties.MaxMoveSpeed;
                 newState = CharacterState.MOVE_UP;
                 break;
             case CharacterDirection.RIGHT:
+                this.velocity.y = 0;
                 joyForce = new Vector2D(Config.PlayerProperties.WalkingAccelerate, 0);
+                joyForceStep = Vector2DHelper.MutilByScalar(joyForce, dt);
+                this.velocity = Vector2DHelper.AddVector(this.velocity, joyForceStep);
+                if (this.velocity.x > Config.PlayerProperties.MaxMoveSpeed)
+                    this.velocity.x = Config.PlayerProperties.MaxMoveSpeed;
                 newState = CharacterState.MOVE_RIGHT;
                 break;
             case CharacterDirection.DOWN:
+                this.velocity.x = 0;
                 joyForce = new Vector2D(0, Config.PlayerProperties.WalkingAccelerate);
+                joyForceStep = Vector2DHelper.MutilByScalar(joyForce, dt);
+                this.velocity = Vector2DHelper.AddVector(this.velocity, joyForceStep);
+                if (this.velocity.y > Config.PlayerProperties.MaxMoveSpeed)
+                    this.velocity.y = Config.PlayerProperties.MaxMoveSpeed;
                 newState = CharacterState.MOVE_DOWN;
                 break;
             case CharacterDirection.LEFT:
+                this.velocity.y = 0;
                 joyForce = new Vector2D(-Config.PlayerProperties.WalkingAccelerate, 0);
+                joyForceStep = Vector2DHelper.MutilByScalar(joyForce, dt);
+                this.velocity = Vector2DHelper.AddVector(this.velocity, joyForceStep);
+                if (this.velocity.x < -Config.PlayerProperties.MaxMoveSpeed)
+                    this.velocity.x = -Config.PlayerProperties.MaxMoveSpeed;
                 newState = CharacterState.MOVE_LEFT;
                 break;
             case CharacterDirection.NONE:
                 isMoving = false;
-                break;
+                this.velocity = Vector2D.zero;
         }
-        Vector2D joyForceStep = Vector2DHelper.MutilByScalar(joyForce, dt);
-        this.velocity = Vector2DHelper.AddVector(this.velocity, joyForceStep);
+//        Vector2D joyForceStep = Vector2DHelper.MutilByScalar(joyForce, dt);
+//        this.velocity = Vector2DHelper.AddVector(this.velocity, joyForceStep);
 
         this.changeState(newState);
 
@@ -77,7 +97,7 @@ public class Player extends Character {
 
     public Player(String imageNamed) {
         super(imageNamed);
-        characterState = CharacterState.MOVE_RIGHT;
+        characterState = CharacterState.STANDING;
     }
 
     int invulnerableTickCount = 0;
@@ -88,7 +108,7 @@ public class Player extends Character {
         updateState(dt);
 
 //        this.velocity = Vector2DHelper.clamped(this.velocity, Config.PlayerProperties.MaxMoveSpeed, Config.PlayerProperties.MaxMoveSpeed);
-        this.velocity = new Vector2D(this.velocity.x * 0.85, this.velocity.y * 0.85);
+//        this.velocity = new Vector2D(this.velocity.x * 0.85, this.velocity.y * 0.85);
         Vector2D velocityStep = Vector2DHelper.MutilByScalar(this.velocity, dt);
         this.position = Vector2DHelper.AddVector(this.position, velocityStep);
         // setup current frame for class
