@@ -27,7 +27,7 @@ public class TileMap extends GameObject {
     private static int mapHeight;
     private static int tileWidth;
     private static int tileHeight;
-    private static Image background;
+    public static Image background;
     private static Image tileSet;
     private static int numberTilePerRow;
     private static int tileSpacing = 0;
@@ -120,7 +120,4 @@ public class TileMap extends GameObject {
         }
     }
 
-    public void update(Player player) {
-
-    }
 }

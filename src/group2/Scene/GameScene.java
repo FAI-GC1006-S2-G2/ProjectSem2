@@ -114,9 +114,19 @@ public class GameScene extends Scene {
     }
 
     private void moveMapCenterPlayer(double dt) {
-        if (player.getPosition().x > 240){
-            map.setPosition(new Vector2D(player.getPosition().x - 240, 0));
+        double x = player.getPosition().x - (Config.WindowProperties.WINDOW_WIDTH - Config.PlayerProperties.WIDTH) / 2;
+        double y = player.getPosition().y - (Config.WindowProperties.WINDOW_HEIGHT - Config.PlayerProperties.HEIGHT) / 2;
+        if (x <= 0) {
+            x = 0;
+        } else if (player.getPosition().x > (TileMap.background.getWidth() - (Config.WindowProperties.WINDOW_WIDTH + Config.PlayerProperties.WIDTH) / 2)) {
+            x = TileMap.background.getWidth() - Config.WindowProperties.WINDOW_WIDTH;
         }
+        if (y <= 0) {
+            y = 0;
+        } else if (player.getPosition().y > (TileMap.background.getHeight() - (Config.WindowProperties.WINDOW_HEIGHT + Config.PlayerProperties.HEIGHT) / 2)) {
+            y = TileMap.background.getHeight() - Config.WindowProperties.WINDOW_HEIGHT;
+        }
+        map.setPosition(new Vector2D(x, y));
     }
 
     private void render(GraphicsContext gc) {
@@ -130,8 +140,9 @@ public class GameScene extends Scene {
         // for debug purpose
         gc.setStroke(Color.RED);
         gc.strokeText("FPS: " + String.valueOf(this.fps), this.getWidth() - 80, this.getHeight() - 30);
-        gc.strokeText(String.valueOf(this.player.getPosition().x), 80, this.getHeight() - 30);
-        gc.strokeText(String.valueOf(this.player.getPosition().y), 80, this.getHeight() - 15);
+        gc.strokeText(String.valueOf((int) this.player.getPosition().x), 80, this.getHeight() - 30);
+        gc.strokeText(String.valueOf((int) this.player.getPosition().y), 80, this.getHeight() - 15);
+        gc.strokeText(String.valueOf((int) this.map.getPosition().x), 120, this.getHeight() - 30);
         gc.strokeText(String.valueOf(this.player.velocity.x) + " " + this.player.velocity.y, 80, this.getHeight() - 45);
     }
 

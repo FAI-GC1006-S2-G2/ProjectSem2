@@ -1,7 +1,9 @@
 package group2.Model;
 
+import group2.Config;
 import group2.Geometric.Size;
 import group2.Geometric.Vector2D;
+import group2.Map.TileMap;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -53,9 +55,21 @@ public class Sprite {
     }
 
     public void render(GraphicsContext gc) {
-        gc.drawImage(this.image,
-                position.x, position.y,
-                size.width, size.height);
+        double x = position.x;
+        double y = position.y;
+        if (position.x > (Config.WindowProperties.WINDOW_WIDTH - Config.PlayerProperties.WIDTH) / 2 &&
+                position.x <= (TileMap.background.getWidth() - (Config.WindowProperties.WINDOW_WIDTH + Config.PlayerProperties.WIDTH) / 2)) {
+            x = (Config.WindowProperties.WINDOW_WIDTH - size.width) / 2;
+        } else if (position.x > (TileMap.background.getWidth() - (Config.WindowProperties.WINDOW_WIDTH + Config.PlayerProperties.WIDTH) / 2)) {
+            x = position.x - (TileMap.background.getWidth() - Config.WindowProperties.WINDOW_WIDTH);
+        }
+        if (position.y > (Config.WindowProperties.WINDOW_HEIGHT - Config.PlayerProperties.HEIGHT) / 2 &&
+                position.y <= (TileMap.background.getHeight() - (Config.WindowProperties.WINDOW_HEIGHT + Config.PlayerProperties.HEIGHT) / 2)) {
+            y = (Config.WindowProperties.WINDOW_HEIGHT - Config.PlayerProperties.HEIGHT) / 2;
+        } else if (position.y > (TileMap.background.getHeight() - (Config.WindowProperties.WINDOW_HEIGHT + Config.PlayerProperties.HEIGHT) / 2)) {
+            y = position.y - (TileMap.background.getHeight() - Config.WindowProperties.WINDOW_HEIGHT);
+        }
+        gc.drawImage(this.image, x, y, size.width, size.height);
     }
 
     public Vector2D getPosition() {
