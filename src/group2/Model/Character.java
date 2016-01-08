@@ -29,6 +29,10 @@ public abstract class Character extends GameObject {
     public Vector2D velocity = Vector2D.zero;
     public int life;
 
+    public int getCharacterDirection() {
+        return characterDirection;
+    }
+
     public CharacterState getState() {
         return this.characterState;
     }

@@ -7,6 +7,7 @@ import group2.Map.TileMap;
 import javafx.scene.Scene;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -69,6 +70,8 @@ public class Sprite {
         } else if (position.y > (TileMap.background.getHeight() - (Config.WindowProperties.WINDOW_HEIGHT + Config.PlayerProperties.HEIGHT) / 2)) {
             y = position.y - (TileMap.background.getHeight() - Config.WindowProperties.WINDOW_HEIGHT);
         }
+//        gc.setStroke(Color.BLACK);
+//        gc.fillRect(x,y,size.width,size.height);
         gc.drawImage(this.image, x, y, size.width, size.height);
     }
 

@@ -3,6 +3,7 @@ package group2.Scene;
 import group2.Config;
 import group2.Geometric.Vector2D;
 import group2.Map.TileMap;
+import group2.Model.Character;
 import group2.Model.Player;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -79,6 +80,7 @@ public class GameScene extends Scene {
         map = new TileMap(this, 10);
         player = new Player("sprites/Player00.png");
         player.setPosition(new Vector2D(200, 200));
+        player.map = map;
     }
 
     private void handleEvents(List<String> input) {
@@ -103,8 +105,9 @@ public class GameScene extends Scene {
 
         // logic code come here
         player.update(dt);
-
         moveMapCenterPlayer(dt);
+        checkCollision(dt);
+
         // for debug purpose
         if (debugInterval >= 30) {
             debugInterval = 0;
@@ -129,6 +132,111 @@ public class GameScene extends Scene {
         map.setPosition(new Vector2D(x, y));
     }
 
+    private void checkCollision(double dt) {
+        double x = player.getPosition().x;
+        double y = player.getPosition().y;
+        int data[] = map.layersList.get(0).getData();
+
+
+        switch (player.getCharacterDirection()) {
+            case Character.CharacterDirection.LEFT: {
+                int row = (int) y / TileMap.tileHeight;
+                int col = (int) x / TileMap.tileWidth;
+                if (x < TileMap.tileWidth) {
+                    player.setPosition(new Vector2D((col + 1) * TileMap.tileWidth, y));
+                    return;
+                }
+                int left1 = TileMap.getIndexOfData(row, col);
+                int left2 = TileMap.getIndexOfData(row + 1, col);
+                // resolve
+                if (y % TileMap.tileHeight > 28 && data[left2] == 0 && data[left1] != 0) {
+                    player.setPosition(new Vector2D(x, (row + 1) * TileMap.tileHeight));
+                    return;
+                }
+                // check left collision
+                if (y % TileMap.tileHeight == 0 && data[left1] == 0) {
+                    return;
+                }
+                if (data[left1] == 0 && data[left2] == 0) {
+                    return;
+                }
+                player.setPosition(new Vector2D((col + 1) * TileMap.tileWidth, y));
+            }
+            break;
+            case Character.CharacterDirection.RIGHT: {
+                int row = (int) y / TileMap.tileHeight;
+                int col = (int) (x + player.getSize().width) / TileMap.tileWidth;
+                if (x + this.player.getSize().width > (TileMap.mapWidth - 1) * TileMap.tileWidth){
+                    player.setPosition(new Vector2D((col -1) * TileMap.tileWidth,y));
+                    return;
+                }
+                int right1 = TileMap.getIndexOfData(row, col);
+                int right2 = TileMap.getIndexOfData(row + 1, col);
+                // resolve
+                if (y % TileMap.tileHeight > 28 && data[right2] == 0 && data[right1] != 0) {
+                    player.setPosition(new Vector2D(x, (row + 1) * TileMap.tileHeight));
+                    return;
+                }
+                // check right collision
+                if (data[right1] == 0 && data[right2] == 0) {
+                    return;
+                } else if (y % TileMap.tileHeight == 0 && data[right1] == 0) {
+                    return;
+                }
+                player.setPosition(new Vector2D((col - 1) * TileMap.tileWidth, y));
+            }
+            break;
+            case Character.CharacterDirection.DOWN: {
+                int row = (int) (y + player.getSize().height) / TileMap.tileHeight;
+                int col = (int) x / TileMap.tileWidth;
+                if (y + this.player.getSize().height > (TileMap.mapHeight - 1) * TileMap.tileHeight){
+                    player.setPosition(new Vector2D(x,(row - 1) * TileMap.tileHeight));
+                    return;
+                }
+                int down1 = TileMap.getIndexOfData(row, col);
+                int down2 = TileMap.getIndexOfData(row, col + 1);
+                // resolve
+                if (x % TileMap.tileWidth > 28 && data[down1] != 0 && data[down2] == 0){
+                    player.setPosition(new Vector2D((col + 1) * TileMap.tileWidth,y));
+                    return;
+                }
+                // check down collision
+                if (data[down1] == 0 && data[down2] == 0) {
+                    return;
+                } else if (x % TileMap.tileHeight == 0 && data[down1] == 0) {
+                    return;
+                }
+                player.setPosition(new Vector2D(x, (row - 1) * TileMap.tileHeight));
+            }
+            break;
+            case Character.CharacterDirection.UP: {
+                int row = (int) y / TileMap.tileHeight;
+                int col = (int) x / TileMap.tileWidth;
+                if (y < TileMap.tileHeight) {
+                    player.setPosition(new Vector2D(x, (row + 1) * TileMap.tileHeight));
+                    return;
+                }
+                int up1 = TileMap.getIndexOfData(row, col);
+                int up2 = TileMap.getIndexOfData(row, col + 1);
+                // resolve
+                if (y % TileMap.tileWidth > 28 && data[up1] != 0 && data[up2] == 0){
+                    player.setPosition(new Vector2D((col + 1) * TileMap.tileWidth, y));
+                    return;
+                }
+                // check up collision
+                if (data[up1] == 0 && data[up2] == 0) {
+                    return;
+                }
+                if (x % TileMap.tileHeight == 0 && data[up1] == 0) {
+                    return;
+                }
+                player.setPosition(new Vector2D(x, (row + 1) * TileMap.tileHeight));
+            }
+        }
+        // check right collision
+
+    }
+
     private void render(GraphicsContext gc) {
         // clear canvas
         gc.clearRect(0, 0, Config.WindowProperties.WINDOW_WIDTH, Config.WindowProperties.WINDOW_HEIGHT);
@@ -140,10 +248,8 @@ public class GameScene extends Scene {
         // for debug purpose
         gc.setStroke(Color.RED);
         gc.strokeText("FPS: " + String.valueOf(this.fps), this.getWidth() - 80, this.getHeight() - 30);
-        gc.strokeText(String.valueOf((int) this.player.getPosition().x), 80, this.getHeight() - 30);
-        gc.strokeText(String.valueOf((int) this.player.getPosition().y), 80, this.getHeight() - 15);
-        gc.strokeText(String.valueOf((int) this.map.getPosition().x), 120, this.getHeight() - 30);
-        gc.strokeText(String.valueOf(this.player.velocity.x) + " " + this.player.velocity.y, 80, this.getHeight() - 45);
+        gc.strokeText(String.valueOf(this.player.getPosition().x % player.getSize().width), 80, this.getHeight() - 30);
+        gc.strokeText(String.valueOf(this.player.getPosition().y % player.getSize().height), 80, this.getHeight() - 15);
     }
 
 }

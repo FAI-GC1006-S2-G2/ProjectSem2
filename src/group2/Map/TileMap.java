@@ -23,15 +23,20 @@ import java.util.LinkedList;
  * Project: ProjectGame
  */
 public class TileMap extends GameObject {
-    private static int mapWidth;
-    private static int mapHeight;
-    private static int tileWidth;
-    private static int tileHeight;
+    public static int mapWidth;
+    public static int mapHeight;
+    public static int tileWidth;
+    public static int tileHeight;
     public static Image background;
     private static Image tileSet;
     private static int numberTilePerRow;
     private static int tileSpacing = 0;
     private static int tileMargin = 0;
+    public static int mapBorder = 4;
+
+    public static int getIndexOfData(int row, int col){
+        return row * mapWidth + col;
+    }
 
     public static int getMapWidth() {
         return mapWidth;
