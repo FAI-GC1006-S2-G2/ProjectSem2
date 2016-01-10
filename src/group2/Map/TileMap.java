@@ -2,6 +2,7 @@ package group2.Map;
 
 import group2.Config;
 import group2.Geometric.Vector2D;
+import group2.Model.Coin;
 import group2.Model.GameObject;
 import group2.Model.Player;
 import group2.Scene.GameScene;
@@ -15,6 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Author: Gác Xanh (phamanh)
@@ -32,9 +34,11 @@ public class TileMap extends GameObject {
     private static int numberTilePerRow;
     private static int tileSpacing = 0;
     private static int tileMargin = 0;
-    public static int mapBorder = 4;
+    public Player player;
+    public Vector2D exitPoint;
+    public List<Coin> coins;
 
-    public static int getIndexOfData(int row, int col){
+    public static int getIndexOfData(int row, int col) {
         return row * mapWidth + col;
     }
 
@@ -62,6 +66,22 @@ public class TileMap extends GameObject {
             Layer layer1 = new Layer(layer);
             layersList.add(layer1);
         }
+        // get coin
+        coins = new LinkedList<>();
+        int[] data = layersList.get(0).getData();
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] == 0) {
+                int row = i / mapWidth;
+                int col = i % mapWidth;
+                if (col == 0 || col >= mapWidth - 1 || row == 0 || row >= mapHeight - 1) {
+                    continue;
+                }
+                Coin coin = new Coin("sprites/coin/coin6.png");
+                coin.setPosition(new Vector2D(col * tileWidth, row * tileHeight));
+                coin.setIndex(i);
+                coins.add(coin);
+            }
+        }
     }
 
     private void setPropertyFromXML(XmlElement root) {
@@ -88,6 +108,41 @@ public class TileMap extends GameObject {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
+        // Get object
+        LinkedList<XmlElement> objectGroups = root.get("objectgroup");
+        for (XmlElement objectGroup : objectGroups) {
+            if (objectGroup.getAttribute("name").equals("objects")) {
+                loadCharacterFromXmlElement(objectGroup, "player");
+                loadCharacterFromXmlElement(objectGroup, "exit");
+            }
+        }
+
+    }
+
+    private void loadCharacterFromXmlElement(List<XmlElement> list, String name) {
+        for (XmlElement object : list) {
+            if (object.getAttribute("name").equals(name)) {
+                String type = object.getAttribute("type");
+                GameObject gameObject = null;
+                switch (type) {
+                    case "player":
+                        gameObject = new Player("sprites/Player00.png");
+                        Player player = (Player) gameObject;
+                        this.player = player;
+                        break;
+                    case "exit":
+                        double exitX = Double.valueOf(object.getAttribute("x").trim());
+                        double exitY = Double.valueOf(object.getAttribute("y").trim());
+                        this.exitPoint = new Vector2D(exitX, exitY);
+                        return;
+                    default:
+                }
+                double posX = Double.valueOf(object.getAttribute("x").trim());
+                double posY = Double.valueOf(object.getAttribute("y").trim());
+                gameObject.setPosition(new Vector2D(posX, posY));
+            }
+        }
     }
 
     public TileMap(GameScene scene, int level) {
@@ -110,8 +165,8 @@ public class TileMap extends GameObject {
                 int row = j / mapWidth;
                 int col = j % mapWidth;
 
-                double dy = - this.position.y + row * tileWidth;
-                double dx = - this.position.x + col * tileHeight;
+                double dy = -this.position.y + row * tileWidth;
+                double dx = -this.position.x + col * tileHeight;
 
                 int tileRow = gid / numberTilePerRow;
                 int tileCol = gid % numberTilePerRow;
@@ -120,7 +175,6 @@ public class TileMap extends GameObject {
                 int sy = tileMargin + tileRow * (tileWidth + tileSpacing);
 
                 gc.drawImage(tileSet, sx, sy, tileWidth, tileHeight, dx, dy, tileWidth, tileHeight);
-
             }
         }
     }
