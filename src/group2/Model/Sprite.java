@@ -53,6 +53,7 @@ public class Sprite {
     }
 
     public void update(double dt) {
+
     }
 
     public void render(GraphicsContext gc) {

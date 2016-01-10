@@ -110,6 +110,9 @@ public class GameScene extends Scene {
         moveMapCenterPlayer();
         checkCollision();
         checkGoldRemain();
+        for (Coin coin: coins){
+            coin.update(dt);
+        }
 
         // for debug purpose
         if (debugInterval >= 30) {

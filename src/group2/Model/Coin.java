@@ -5,6 +5,10 @@ import group2.Geometric.Rect;
 import group2.Geometric.Vector2D;
 import group2.Map.TileMap;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 /**
  * Author: Gác Xanh (phamanh)
@@ -15,6 +19,23 @@ import javafx.scene.canvas.GraphicsContext;
 public class Coin extends GameObject {
     public Coin(String imageNamed) {
         super(imageNamed);
+        loadAnimation();
+    }
+
+    private double timeElapsedSinceStartAnimation;
+
+    private AnimatedImage animation;
+
+    private void loadAnimation(){
+        Image[] images = new Image[8];
+        for (int i = 0; i < images.length; i++){
+            try {
+                images[i] = new Image(new FileInputStream("sprites/coin/coin" + i + ".png"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        animation = new AnimatedImage(images,0.06);
     }
 
     private boolean active = true;
@@ -35,6 +56,12 @@ public class Coin extends GameObject {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    @Override
+    public void update(double dt) {
+        this.timeElapsedSinceStartAnimation += dt;
+        this.image = animation.getFrame(timeElapsedSinceStartAnimation);
     }
 
     @Override
