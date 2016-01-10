@@ -17,11 +17,16 @@ public class Config {
    public static class PlayerProperties {
       public final static double JumpForce = 400;
       public final static double JumpCutOff = 200;
-      public final static double MaxMoveSpeed = 300;
+      public final static double MaxMoveSpeed = 100;
       public final static double WalkingAccelerate = 1000;
 
       public final static int WIDTH = 32;
       public final static int HEIGHT = 32;
+   }
+
+   public static class MapProperties{
+      public final static int minResolve = 6;
+      public final static int maxResolve = 26;
    }
 
 }

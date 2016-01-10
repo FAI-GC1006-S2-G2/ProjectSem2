@@ -149,8 +149,12 @@ public class GameScene extends Scene {
                 int left1 = TileMap.getIndexOfData(row, col);
                 int left2 = TileMap.getIndexOfData(row + 1, col);
                 // resolve
-                if (y % TileMap.tileHeight > 28 && data[left2] == 0 && data[left1] != 0) {
+                if (y % TileMap.tileHeight > Config.MapProperties.maxResolve && data[left2] == 0 && data[left1] != 0) {
                     player.setPosition(new Vector2D(x, (row + 1) * TileMap.tileHeight));
+                    return;
+                }
+                if (y % TileMap.tileHeight < Config.MapProperties.minResolve && data[left1] == 0 && data[left2] != 0){
+                    player.setPosition(new Vector2D(x, row * TileMap.tileHeight));
                     return;
                 }
                 // check left collision
@@ -173,8 +177,12 @@ public class GameScene extends Scene {
                 int right1 = TileMap.getIndexOfData(row, col);
                 int right2 = TileMap.getIndexOfData(row + 1, col);
                 // resolve
-                if (y % TileMap.tileHeight > 28 && data[right2] == 0 && data[right1] != 0) {
+                if (y % TileMap.tileHeight > Config.MapProperties.maxResolve && data[right2] == 0 && data[right1] != 0) {
                     player.setPosition(new Vector2D(x, (row + 1) * TileMap.tileHeight));
+                    return;
+                }
+                if (y % TileMap.tileHeight < Config.MapProperties.minResolve && data[right1] == 0 && data[right2] != 0){
+                    player.setPosition(new Vector2D(x, row * TileMap.tileHeight));
                     return;
                 }
                 // check right collision
@@ -196,8 +204,12 @@ public class GameScene extends Scene {
                 int down1 = TileMap.getIndexOfData(row, col);
                 int down2 = TileMap.getIndexOfData(row, col + 1);
                 // resolve
-                if (x % TileMap.tileWidth > 28 && data[down1] != 0 && data[down2] == 0){
+                if (x % TileMap.tileWidth > Config.MapProperties.maxResolve && data[down1] != 0 && data[down2] == 0){
                     player.setPosition(new Vector2D((col + 1) * TileMap.tileWidth,y));
+                    return;
+                }
+                if (x % TileMap.tileWidth < Config.MapProperties.minResolve && data[down1] == 0 && data[down2] != 0){
+                    player.setPosition(new Vector2D(col * TileMap.tileWidth, y));
                     return;
                 }
                 // check down collision
@@ -219,8 +231,12 @@ public class GameScene extends Scene {
                 int up1 = TileMap.getIndexOfData(row, col);
                 int up2 = TileMap.getIndexOfData(row, col + 1);
                 // resolve
-                if (y % TileMap.tileWidth > 28 && data[up1] != 0 && data[up2] == 0){
+                if (y % TileMap.tileWidth > Config.MapProperties.maxResolve && data[up1] != 0 && data[up2] == 0){
                     player.setPosition(new Vector2D((col + 1) * TileMap.tileWidth, y));
+                    return;
+                }
+                if (y % TileMap.tileWidth < Config.MapProperties.minResolve && data[up1] == 0 && data[up2] != 0){
+                    player.setPosition(new Vector2D(col * TileMap.tileWidth, y));
                     return;
                 }
                 // check up collision
@@ -233,7 +249,6 @@ public class GameScene extends Scene {
                 player.setPosition(new Vector2D(x, (row + 1) * TileMap.tileHeight));
             }
         }
-        // check right collision
 
     }
 
