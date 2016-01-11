@@ -10,8 +10,8 @@ public class Config {
    public final static double NANOSECONDPERSEC = 1000000000.0;
 
    public static class WindowProperties {
-      public final static int WINDOW_WIDTH = 480;
-      public final static int WINDOW_HEIGHT = 480;
+      public final static int WINDOW_WIDTH = 800;
+      public final static int WINDOW_HEIGHT = 600;
    }
 
    public static class PlayerProperties {

@@ -76,7 +76,7 @@ public class TileMap extends GameObject {
                 if (col == 0 || col >= mapWidth - 1 || row == 0 || row >= mapHeight - 1) {
                     continue;
                 }
-                Coin coin = new Coin("sprites/coin/coin6.png");
+                Coin coin = new Coin();
                 coin.setPosition(new Vector2D(col * tileWidth, row * tileHeight));
                 coin.setIndex(i);
                 coins.add(coin);

@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * Author: Gác Xanh (phamanh)
@@ -21,21 +22,26 @@ public class Coin extends GameObject {
         super(imageNamed);
         loadAnimation();
     }
+    public Coin(){
+        loadAnimation();
+    }
 
     private double timeElapsedSinceStartAnimation;
 
     private AnimatedImage animation;
 
-    private void loadAnimation(){
+    private void loadAnimation() {
         Image[] images = new Image[8];
-        for (int i = 0; i < images.length; i++){
+        for (int i = 0; i < images.length; i++) {
             try {
-                images[i] = new Image(new FileInputStream("sprites/coin/coin" + i + ".png"));
-            } catch (FileNotFoundException e) {
+                FileInputStream fileInputStream = new FileInputStream("sprites/coin/coin" + i + ".png");
+                images[i] = new Image(fileInputStream);
+                fileInputStream.close();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        animation = new AnimatedImage(images,0.06);
+        animation = new AnimatedImage(images, 0.06);
     }
 
     private boolean active = true;
@@ -66,8 +72,6 @@ public class Coin extends GameObject {
 
     @Override
     public void render(GraphicsContext gc) {
-        double posX = position.x;
-        double posY = position.y;
 
         gc.drawImage(this.image, -subPosition.x + this.position.x + Config.CoinProperties.width,
                 -subPosition.y + this.position.y + Config.CoinProperties.height,

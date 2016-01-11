@@ -7,6 +7,7 @@ import group2.Map.TileMap;
 import group2.Model.Character;
 import group2.Model.Coin;
 import group2.Model.Player;
+import group2.SoundManager;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -15,6 +16,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,18 +31,23 @@ public class GameScene extends Scene {
     public Canvas canvas;
     AnimationTimer mainLoopManager;
 
+    String getCoin;
+    String playBackground;
     int debugInterval = 0;
     int fps;
     long lastUpdateTime = 0;
+    public boolean gameRunning = true;
 
     // Variables
     Player player;
     TileMap map;
     List<Coin> coins;
+    private int coinGet = 0;
+    private int level = 10;
 
     public GameScene() {
         super(new Group());
-        newGame();
+        newGame(level);
         setupGameLoop();
     }
 
@@ -79,8 +88,12 @@ public class GameScene extends Scene {
         mainLoopManager.start();
     }
 
-    private void newGame() {
-        map = new TileMap(this, 10);
+    private void newGame(int level) {
+        SoundManager.stopBackGroundMusic();
+        playBackground = "sounds/background.mp3";
+        getCoin = "sounds/coin5.wav";
+        SoundManager.playBackGroundMusic(playBackground);
+        map = new TileMap(this, level);
         player = map.player;
         coins = map.coins;
     }
@@ -100,6 +113,10 @@ public class GameScene extends Scene {
     }
 
     private void update(long currentTime) {
+        if (!gameRunning) {
+            return;
+        }
+        checkNewLevel();
 
         double dt = (currentTime - lastUpdateTime) / Config.NANOSECONDPERSEC;
         if (dt > 0.03) dt = 0.03;
@@ -110,7 +127,7 @@ public class GameScene extends Scene {
         moveMapCenterPlayer();
         checkCollision();
         checkGoldRemain();
-        for (Coin coin: coins){
+        for (Coin coin : coins) {
             coin.update(dt);
         }
 
@@ -120,6 +137,35 @@ public class GameScene extends Scene {
             this.fps = (int) (1 / dt);
         }
         debugInterval++;
+    }
+
+    public void backToMainMenu() {
+        mainLoopManager.stop();
+        SoundManager.stopBackGroundMusic();
+    }
+
+    private void checkNewLevel() {
+        if (coinGet > 30) {
+            if (level == 13) {
+                gameRunning = false;
+                wonGame();
+                return;
+            }
+            coinGet = 0;
+            level++;
+            newGame(level);
+        }
+    }
+
+    public void wonGame() {
+//        SoundManager.stopBackGroundMusic();
+//        SoundManager.playSound("sounds/victory.mp3");
+        // play won sound
+        gameRunning = false;
+        Text text = new Text(Config.WindowProperties.WINDOW_WIDTH / 2 - 100, Config.WindowProperties.WINDOW_HEIGHT / 2, "YOU WON!!!");
+        text.setFont(Font.font("Chalkduster", FontWeight.BOLD, 50));
+        text.setFill(Color.AZURE);
+        root.getChildren().add(text);
     }
 
     private void checkGoldRemain() {
@@ -165,6 +211,8 @@ public class GameScene extends Scene {
         if (i == 0) return;
         if (player.intersects(coins.get(i).getRect())) {
             coins.remove(i);
+            coinGet++;
+            SoundManager.playSound(getCoin);
         }
     }
 
@@ -324,6 +372,7 @@ public class GameScene extends Scene {
         gc.strokeText("FPS: " + String.valueOf(this.fps), this.getWidth() - 80, this.getHeight() - 30);
         gc.strokeText(String.valueOf(this.player.getPosition().x), 80, this.getHeight() - 30);
         gc.strokeText(String.valueOf(this.player.getPosition().y), 80, this.getHeight() - 15);
+        gc.strokeText(String.valueOf(this.coinGet), 80, this.getHeight() - 45);
     }
 
 }
