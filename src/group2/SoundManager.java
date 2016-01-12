@@ -12,7 +12,7 @@ public class SoundManager {
 
     static AudioClip playBackGround;
 
-    static Map<String, javafx.scene.media.AudioClip> soundAssets = new HashMap<String, javafx.scene.media.AudioClip>();
+    static Map<String, AudioClip> soundAssets = new HashMap<String, javafx.scene.media.AudioClip>();
 
     private SoundManager() {
 
@@ -20,7 +20,7 @@ public class SoundManager {
 
     public static void playBackGroundMusic(String fileName) {
         if (playBackGround == null)
-            playBackGround = new javafx.scene.media.AudioClip(new File(fileName).toURI().toString());
+            playBackGround = new AudioClip(new File(fileName).toURI().toString());
 
         if (!playBackGround.isPlaying()) {
             playBackGround.setCycleCount(-1);
@@ -40,7 +40,7 @@ public class SoundManager {
     public static void playSound(String fileName) {
         javafx.scene.media.AudioClip clip2;
         if (!soundAssets.containsKey(fileName)) {
-            clip2 = new javafx.scene.media.AudioClip(new File(fileName).toURI().toString());
+            clip2 = new AudioClip(new File(fileName).toURI().toString());
             soundAssets.put(fileName, clip2);
         } else {
             clip2 = soundAssets.get(fileName);

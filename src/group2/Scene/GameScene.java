@@ -4,9 +4,8 @@ import group2.Config;
 import group2.Geometric.Rect;
 import group2.Geometric.Vector2D;
 import group2.Map.TileMap;
+import group2.Model.*;
 import group2.Model.Character;
-import group2.Model.Coin;
-import group2.Model.Player;
 import group2.SoundManager;
 import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
@@ -21,6 +20,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,12 +36,14 @@ public class GameScene extends Scene {
     int debugInterval = 0;
     int fps;
     long lastUpdateTime = 0;
+    long lastUpdateBird = 0;
     public boolean gameRunning = true;
 
     // Variables
     Player player;
     TileMap map;
     List<Coin> coins;
+    List<Bird> birds;
     private int coinGet = 0;
     private int level = 10;
 
@@ -96,7 +98,9 @@ public class GameScene extends Scene {
         map = new TileMap(this, level);
         player = map.player;
         coins = map.coins;
+        birds = new LinkedList<>();
     }
+
 
     private void handleEvents(List<String> input) {
         if (input.contains("LEFT")) {
@@ -130,6 +134,10 @@ public class GameScene extends Scene {
         for (Coin coin : coins) {
             coin.update(dt);
         }
+        createAndUpdateBird(currentTime);
+        for (int i = 0; i < birds.size(); i++) {
+            birds.get(i).update(dt);
+        }
 
         // for debug purpose
         if (debugInterval >= 30) {
@@ -139,13 +147,23 @@ public class GameScene extends Scene {
         debugInterval++;
     }
 
+    private void createAndUpdateBird(double currentTime) {
+        double dt = (currentTime - lastUpdateBird) / Config.NANOSECONDPERSEC;
+        if (dt > 2) {
+            lastUpdateBird = (long) currentTime;
+            Bird bird = new Bird("sprites/Bird/bird00.png", Enemy.EnemyState.MOVE_RIGHT);
+            bird.setPosition(new Vector2D(0, 10 * TileMap.tileHeight));
+            birds.add(bird);
+        }
+    }
+
     public void backToMainMenu() {
         mainLoopManager.stop();
         SoundManager.stopBackGroundMusic();
     }
 
     private void checkNewLevel() {
-        if (coinGet > 30) {
+        if (coinGet > 50) {
             if (level == 13) {
                 gameRunning = false;
                 wonGame();
@@ -233,6 +251,10 @@ public class GameScene extends Scene {
         for (Coin coin : coins) {
             coin.subPosition = new Vector2D(x, y);
         }
+        if (birds.size() > 0)
+            for (Bird bird : birds) {
+                bird.subPosition = new Vector2D(x, y);
+            }
     }
 
     private void checkCollision() {
@@ -366,6 +388,10 @@ public class GameScene extends Scene {
         for (Coin coin : coins) {
             coin.render(gc);
         }
+        for (Bird bird : birds) {
+            bird.render(gc);
+        }
+
 
         // for debug purpose
         gc.setStroke(Color.RED);

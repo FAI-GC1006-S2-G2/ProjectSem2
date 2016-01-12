@@ -107,15 +107,11 @@ public class Player extends Character {
     @Override
     public void update(double dt) {
         updateState(dt);
-//        this.velocity = Vector2DHelper.clamped(this.velocity, Config.PlayerProperties.MaxMoveSpeed, Config.PlayerProperties.MaxMoveSpeed);
-//        this.velocity = new Vector2D(this.velocity.x * 0.85, this.velocity.y * 0.85);
         Vector2D velocityStep = Vector2DHelper.MutilByScalar(this.velocity, dt);
         this.position = Vector2DHelper.AddVector(this.position, velocityStep);
         // setup current frame for class
         super.update(dt);
     }
-
-    public TileMap map;
 
     public void moveLeft() {
         characterDirection = CharacterDirection.LEFT;
