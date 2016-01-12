@@ -37,6 +37,7 @@ public class Config {
    }
 
    public static class BirdProperties{
+      public final static int maxBird = 40;
       public final static double TimeGenerate = 0.1;
       public final static int MaxMoveSpeed = 130;
    }

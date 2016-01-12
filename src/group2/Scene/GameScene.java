@@ -174,7 +174,7 @@ public class GameScene extends Scene {
     int i = 1;
 
     private void createAndUpdateBird(double currentTime, double dt) {
-        if (birds.size() > 40){
+        if (birds.size() > Config.BirdProperties.maxBird){
             for (int i = 0; i < birds.size(); i++) {
                 birds.get(i).update(dt);
             }
