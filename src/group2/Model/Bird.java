@@ -70,6 +70,6 @@ public class Bird extends Enemy {
     }
 
     public Rect getRect() {
-        return new Rect(this.getPosition().x-1, this.getPosition().y-1, this.image.getWidth()-2, this.image.getHeight()-2);
+        return new Rect(this.getPosition().x+3, this.getPosition().y+ 3, this.image.getWidth()-6, this.image.getHeight()-6);
     }
 }

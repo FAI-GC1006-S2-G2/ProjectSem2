@@ -22,6 +22,7 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by BTC on 2015/12/17.
@@ -30,6 +31,7 @@ public class GameScene extends Scene {
     public Group root;
     public Canvas canvas;
     AnimationTimer mainLoopManager;
+    private Random rd = new Random();
 
     String getCoin;
     String playBackground;
@@ -135,9 +137,10 @@ public class GameScene extends Scene {
             coin.update(dt);
         }
         createAndUpdateBird(currentTime, dt);
-        if(checkCollisionWithBird()){
+        if (checkCollisionWithBird()) {
             looseGame();
         }
+        removeBird();
 
         // for debug purpose
         if (debugInterval >= 30) {
@@ -146,30 +149,80 @@ public class GameScene extends Scene {
         }
         debugInterval++;
     }
+    private void removeBird(){
+        for (int i = 0; i < birds.size(); i ++){
+            Vector2D position = birds.get(i).getPosition();
+            if (position.y < 0 || position.y > TileMap.mapHeight * TileMap.tileHeight){
+                birds.remove(i);
+            }
+            if (position.x < 0 || position.x > TileMap.mapWidth * TileMap.tileWidth){
+                birds.remove(i);
+            }
+        }
+    }
 
-    private boolean checkCollisionWithBird(){
+    private boolean checkCollisionWithBird() {
         Rect player = new Rect(this.player.getPosition().x + 3, this.player.getPosition().y, this.player.getSize().width - 6, this.player.getSize().height);
-        for (Bird bird: birds){
-            if (player.intersects(bird.getRect())){
+        for (Bird bird : birds) {
+            if (player.intersects(bird.getRect())) {
                 return true;
             }
         }
         return false;
     }
+
     int i = 1;
 
     private void createAndUpdateBird(double currentTime, double dt) {
+        if (birds.size() > 40){
+            for (int i = 0; i < birds.size(); i++) {
+                birds.get(i).update(dt);
+            }
+            return;
+        }
         double elapsedTime = (currentTime - lastUpdateBird) / Config.NANOSECONDPERSEC;
-        if (elapsedTime > 0.5) {
+        if (elapsedTime > Config.BirdProperties.TimeGenerate) {
             lastUpdateBird = (long) currentTime;
-            Bird bird = new Bird("sprites/Bird/bird00.png", Enemy.EnemyState.MOVE_RIGHT);
-            bird.setPosition(new Vector2D(0, i++ * TileMap.tileHeight));
-            if (i == TileMap.mapHeight -1) i = 1;
-            birds.add(bird);
+            createBird();
         }
         for (int i = 0; i < birds.size(); i++) {
             birds.get(i).update(dt);
         }
+    }
+
+    private void createBird() {
+        int i = rd.nextInt(4);
+        int col;
+        int row;
+        switch (i) {
+            case 0:
+                Bird birdDown = new Bird("sprites/Bird/bird00.png", Enemy.EnemyState.MOVE_DOWN);
+                col = rd.nextInt(TileMap.mapWidth - 2) + 1;
+                birdDown.setPosition(new Vector2D(TileMap.tileWidth * col, 0));
+                birds.add(birdDown);
+                break;
+            case 1:
+                Bird birdLeft = new Bird("sprites/Bird/bird00.png", Enemy.EnemyState.MOVE_LEFT);
+                row = rd.nextInt(TileMap.mapHeight - 2) + 1;
+                birdLeft.setPosition(new Vector2D(TileMap.mapWidth * TileMap.tileWidth,row * TileMap.tileHeight));
+                birds.add(birdLeft);
+                break;
+            case 2:
+                Bird birdUp = new Bird("sprites/Bird/bird00.png", Enemy.EnemyState.MOVE_UP);
+                col = rd.nextInt(TileMap.mapWidth - 2) + 1;
+                birdUp.setPosition(new Vector2D(col * TileMap.tileWidth,TileMap.mapHeight * TileMap.tileHeight));
+                birds.add(birdUp);
+                break;
+            case 3:
+                Bird birdRight = new Bird("sprites/Bird/bird00.png", Enemy.EnemyState.MOVE_RIGHT);
+                row = rd.nextInt(TileMap.mapHeight - 2) + 1;
+                birdRight.setPosition(new Vector2D(0,row * TileMap.tileHeight));
+                birds.add(birdRight);
+        }
+//        Bird bird = new Bird("sprites/Bird/bird00.png", Enemy.EnemyState.MOVE_RIGHT);
+//        bird.setPosition(new Vector2D(0, i++ * TileMap.tileHeight));
+//        if (i == TileMap.mapHeight - 1) i = 1;
+//        birds.add(bird);
     }
 
     public void backToMainMenu() {
@@ -201,12 +254,12 @@ public class GameScene extends Scene {
         root.getChildren().add(text);
     }
 
-    private void looseGame(){
+    private void looseGame() {
         SoundManager.stopBackGroundMusic();
         SoundManager.playSound("sounds/victory.mp3");
         gameRunning = false;
         Text text = new Text(Config.WindowProperties.WINDOW_WIDTH / 2 - 100, Config.WindowProperties.WINDOW_HEIGHT / 2, "YOU LOSE!!!");
-        text.setFont(Font.font("Chalkduster", FontWeight.BOLD,50));
+        text.setFont(Font.font("Chalkduster", FontWeight.BOLD, 50));
         text.setFill(Color.AZURE);
         root.getChildren().add(text);
     }
