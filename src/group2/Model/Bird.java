@@ -1,6 +1,7 @@
 package group2.Model;
 
 import group2.Config;
+import group2.Geometric.Rect;
 import group2.Geometric.Vector2D;
 import group2.Geometric.Vector2DHelper;
 import javafx.scene.canvas.GraphicsContext;
@@ -30,8 +31,8 @@ public class Bird extends Enemy {
         frameDictionary.put(EnemyState.MOVE_LEFT, this.loadAnimations("flyLeftAnim", true));
     }
 
-    private void setupVelocity(EnemyState enemyState){
-        switch (enemyState){
+    private void setupVelocity(EnemyState enemyState) {
+        switch (enemyState) {
             case MOVE_RIGHT:
                 this.velocity = new Vector2D(Config.BirdProperties.MaxMoveSpeed, 0);
                 break;
@@ -66,5 +67,9 @@ public class Bird extends Enemy {
         gc.drawImage(this.image, -subPosition.x + this.position.x,
                 -subPosition.y + this.position.y,
                 this.image.getWidth(), this.image.getHeight());
+    }
+
+    public Rect getRect() {
+        return new Rect(this.getPosition().x-1, this.getPosition().y-1, this.image.getWidth()-2, this.image.getHeight()-2);
     }
 }

@@ -128,15 +128,15 @@ public class GameScene extends Scene {
 
         // logic code come here
         player.update(dt);
-        moveMapCenterPlayer();
         checkCollision();
+        moveMapCenterPlayer();
         checkGoldRemain();
         for (Coin coin : coins) {
             coin.update(dt);
         }
-        createAndUpdateBird(currentTime);
-        for (int i = 0; i < birds.size(); i++) {
-            birds.get(i).update(dt);
+        createAndUpdateBird(currentTime, dt);
+        if(checkCollisionWithBird()){
+            looseGame();
         }
 
         // for debug purpose
@@ -147,13 +147,28 @@ public class GameScene extends Scene {
         debugInterval++;
     }
 
-    private void createAndUpdateBird(double currentTime) {
-        double dt = (currentTime - lastUpdateBird) / Config.NANOSECONDPERSEC;
-        if (dt > 2) {
+    private boolean checkCollisionWithBird(){
+        Rect player = new Rect(this.player.getPosition().x + 3, this.player.getPosition().y, this.player.getSize().width - 6, this.player.getSize().height);
+        for (Bird bird: birds){
+            if (player.intersects(bird.getRect())){
+                return true;
+            }
+        }
+        return false;
+    }
+    int i = 1;
+
+    private void createAndUpdateBird(double currentTime, double dt) {
+        double elapsedTime = (currentTime - lastUpdateBird) / Config.NANOSECONDPERSEC;
+        if (elapsedTime > 0.5) {
             lastUpdateBird = (long) currentTime;
             Bird bird = new Bird("sprites/Bird/bird00.png", Enemy.EnemyState.MOVE_RIGHT);
-            bird.setPosition(new Vector2D(0, 10 * TileMap.tileHeight));
+            bird.setPosition(new Vector2D(0, i++ * TileMap.tileHeight));
+            if (i == TileMap.mapHeight -1) i = 1;
             birds.add(bird);
+        }
+        for (int i = 0; i < birds.size(); i++) {
+            birds.get(i).update(dt);
         }
     }
 
@@ -176,12 +191,22 @@ public class GameScene extends Scene {
     }
 
     public void wonGame() {
-//        SoundManager.stopBackGroundMusic();
-//        SoundManager.playSound("sounds/victory.mp3");
-        // play won sound
+        SoundManager.stopBackGroundMusic();
+        SoundManager.playSound("sounds/victory.mp3");
+        // play won so
         gameRunning = false;
         Text text = new Text(Config.WindowProperties.WINDOW_WIDTH / 2 - 100, Config.WindowProperties.WINDOW_HEIGHT / 2, "YOU WON!!!");
         text.setFont(Font.font("Chalkduster", FontWeight.BOLD, 50));
+        text.setFill(Color.AZURE);
+        root.getChildren().add(text);
+    }
+
+    private void looseGame(){
+        SoundManager.stopBackGroundMusic();
+        SoundManager.playSound("sounds/victory.mp3");
+        gameRunning = false;
+        Text text = new Text(Config.WindowProperties.WINDOW_WIDTH / 2 - 100, Config.WindowProperties.WINDOW_HEIGHT / 2, "YOU LOSE!!!");
+        text.setFont(Font.font("Chalkduster", FontWeight.BOLD,50));
         text.setFill(Color.AZURE);
         root.getChildren().add(text);
     }
