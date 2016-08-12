@@ -1,6 +1,5 @@
 package group2.Map;
 
-import group2.Config;
 import group2.Geometric.Vector2D;
 import group2.Model.Coin;
 import group2.Model.GameObject;
