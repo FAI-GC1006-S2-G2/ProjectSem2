@@ -3,8 +3,8 @@ package group2.Map;
 import group2.Geometric.Vector2D;
 import group2.Model.Coin;
 import group2.Model.GameObject;
-import group2.Model.Player;
 import group2.Scene.GameScene;
+import group2.Model.Player;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import xmlwise.XmlElement;
@@ -34,18 +34,18 @@ public class TileMap extends GameObject {
     private static int tileSpacing = 0;
     private static int tileMargin = 0;
     public Player player;
-    public Vector2D exitPoint;
+    private Vector2D exitPoint;
     public List<Coin> coins;
 
     public static int getIndexOfData(int row, int col) {
         return row * mapWidth + col;
     }
 
-    public static int getMapWidth() {
+    static int getMapWidth() {
         return mapWidth;
     }
 
-    public static int getMapHeight() {
+    static int getMapHeight() {
         return mapHeight;
     }
 
@@ -60,6 +60,7 @@ public class TileMap extends GameObject {
             e.printStackTrace();
         }
         // data
+        assert root != null;
         LinkedList<XmlElement> layerNode = root.get("layer");
         for (XmlElement layer : layerNode) {
             Layer layer1 = new Layer(layer);
@@ -90,32 +91,30 @@ public class TileMap extends GameObject {
         String imageURL = imageSourceNode.getAttribute("source");
         String backgroundURL = imageLayerNode.getFirst().getAttribute("source");
 
-        this.tileWidth = Integer.valueOf(root.getAttribute("tilewidth"));
-        this.tileHeight = Integer.valueOf(root.getAttribute("tileheight"));
-        this.mapWidth = Integer.valueOf(root.getAttribute("width"));
-        this.mapHeight = Integer.valueOf(root.getAttribute("height"));
+        tileWidth = Integer.valueOf(root.getAttribute("tilewidth"));
+        tileHeight = Integer.valueOf(root.getAttribute("tileheight"));
+        mapWidth = Integer.valueOf(root.getAttribute("width"));
+        mapHeight = Integer.valueOf(root.getAttribute("height"));
         if (tilesetNode.containsAttribute("margin")) {
-            this.tileMargin = Integer.valueOf(tilesetNode.getAttribute("margin"));
+            tileMargin = Integer.valueOf(tilesetNode.getAttribute("margin"));
         }
         if (tilesetNode.containsAttribute("spacing")) {
-            this.tileSpacing = Integer.valueOf(tilesetNode.getAttribute("spacing"));
+            tileSpacing = Integer.valueOf(tilesetNode.getAttribute("spacing"));
         }
-        this.numberTilePerRow = (Integer.valueOf(imageSourceNode.getAttribute("width")) + tileSpacing - tileMargin) / tileWidth;
+        numberTilePerRow = (Integer.valueOf(imageSourceNode.getAttribute("width")) + tileSpacing - tileMargin) / tileWidth;
         try {
-            this.tileSet = new Image(new FileInputStream("levels/" + imageURL));
-            this.background = new Image(new FileInputStream("levels/" + backgroundURL));
+            tileSet = new Image(new FileInputStream("levels/" + imageURL));
+            background = new Image(new FileInputStream("levels/" + backgroundURL));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
         // Get object
         LinkedList<XmlElement> objectGroups = root.get("objectgroup");
-        for (XmlElement objectGroup : objectGroups) {
-            if (objectGroup.getAttribute("name").equals("objects")) {
-                loadCharacterFromXmlElement(objectGroup, "player");
-                loadCharacterFromXmlElement(objectGroup, "exit");
-            }
-        }
+        objectGroups.stream().filter(objectGroup -> objectGroup.getAttribute("name").equals("objects")).forEach(objectGroup -> {
+            loadCharacterFromXmlElement(objectGroup, "player");
+            loadCharacterFromXmlElement(objectGroup, "exit");
+        });
 
     }
 
@@ -127,8 +126,7 @@ public class TileMap extends GameObject {
                 switch (type) {
                     case "player":
                         gameObject = new Player("sprites/Player00.png");
-                        Player player = (Player) gameObject;
-                        this.player = player;
+                        this.player = (Player) gameObject;
                         break;
                     case "exit":
                         double exitX = Double.valueOf(object.getAttribute("x").trim());
@@ -139,22 +137,23 @@ public class TileMap extends GameObject {
                 }
                 double posX = Double.valueOf(object.getAttribute("x").trim());
                 double posY = Double.valueOf(object.getAttribute("y").trim());
+                assert gameObject != null;
                 gameObject.setPosition(new Vector2D(posX, posY));
             }
         }
     }
 
-    public TileMap(GameScene scene, int level) {
+    public TileMap(int level) {
         loadMapFromXML("level" + level + ".tmx");
     }
 
     public void render(GraphicsContext gc) {
         if (layersList.size() <= 0 || mapHeight * mapWidth <= 0) return;
-        gc.drawImage(this.background, -this.position.x, -this.position.y, this.background.getWidth(), this.background.getHeight());
+        gc.drawImage(background, -this.position.x, -this.position.y, background.getWidth(), background.getHeight());
         int size = mapWidth * mapHeight;
-        for (int i = 0; i < layersList.size(); i++) {
+        for (Layer aLayersList : layersList) {
 
-            int[] data = layersList.get(i).getData();
+            int[] data = aLayersList.getData();
 
             for (int j = 0; j < size; j++) {
                 int gid = data[j];

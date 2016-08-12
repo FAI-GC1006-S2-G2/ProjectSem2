@@ -15,8 +15,6 @@ public class Config {
    }
 
    public static class PlayerProperties {
-      public final static double JumpForce = 400;
-      public final static double JumpCutOff = 200;
       public final static double MaxMoveSpeed = 160;
       public final static double WalkingAccelerate = 1000;
 

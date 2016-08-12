@@ -1,6 +1,5 @@
 package group2.Map;
 
-import javafx.scene.image.Image;
 import xmlwise.XmlElement;
 
 /**
@@ -13,7 +12,7 @@ public class Layer {
     private int[] data;
     private XmlElement xmlElement;
 
-    public Layer(XmlElement xmlElement) {
+    Layer(XmlElement xmlElement) {
         this.xmlElement = xmlElement;
         setData();
     }

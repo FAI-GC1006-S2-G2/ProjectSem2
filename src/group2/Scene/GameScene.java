@@ -97,7 +97,7 @@ public class GameScene extends Scene {
         playBackground = "sounds/background.mp3";
         getCoin = "sounds/coin5.wav";
         SoundManager.playBackGroundMusic(playBackground);
-        map = new TileMap(this, level);
+        map = new TileMap(level);
         player = map.player;
         coins = map.coins;
         birds = new LinkedList<>();

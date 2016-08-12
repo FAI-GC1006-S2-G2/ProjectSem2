@@ -1,10 +1,12 @@
+/**
+ * Created by BTC on 2015/12/17.
+ */
+
 package group2;
 
 import group2.Scene.GameScene;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
@@ -12,14 +14,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
-/**
- * Created by BTC on 2015/12/17.
- */
 public class GameViewController extends Application {
 
     // Properties
-    GameScene gameScene;
-    Button backButton;
+    private GameScene gameScene;
+    private Button backButton;
 
     public static void main(String[] args) {
         launch(args);
@@ -40,47 +39,32 @@ public class GameViewController extends Application {
 
         gameScene.root.getChildren().add(backButton);
         backButton.setFocusTraversable(false);
-        backButton.setOnMouseExited(new EventHandler<MouseEvent>() {
-
-            @Override
-            public void handle(MouseEvent arg0) {
-                try {
-                    backButton.setTextFill(Color.BLACK);
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+        backButton.setOnMouseExited(arg0 -> {
+            try {
+                backButton.setTextFill(Color.BLACK);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-
         });
-        backButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
-
-            @Override
-            public void handle(MouseEvent arg0) {
-                try {
-                    backButton.setTextFill(Color.WHITE);
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+        backButton.setOnMouseEntered(arg0 -> {
+            try {
+                backButton.setTextFill(Color.WHITE);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-
         });
-        backButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-            @Override
-            public void handle(MouseEvent arg0) {
-                MainMenuViewController mainMenuViewController = new MainMenuViewController();
-                try {
-                    gameScene.backToMainMenu();
-                    primaryStage.close();
-                    mainMenuViewController.start(primaryStage);
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+        backButton.setOnMouseClicked(arg0 -> {
+            MainMenuViewController mainMenuViewController = new MainMenuViewController();
+            try {
+                gameScene.backToMainMenu();
+                primaryStage.close();
+                mainMenuViewController.start(primaryStage);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-
         });
         primaryStage.setScene(gameScene);
         primaryStage.show();
